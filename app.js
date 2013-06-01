@@ -33,6 +33,7 @@ var get_clean_article = function(url, res) {
 function handler (req, res) {
 	var url_parts = url.parse(req.url, true);
 	var article_url = url_parts.query.url;
+	console.log("article URL " + article_url);
 	get_clean_article(article_url, res);
 }
 
