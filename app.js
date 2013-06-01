@@ -34,6 +34,10 @@ function handler (req, res) {
 	var url_parts = url.parse(req.url, true);
 	var article_url = url_parts.query.url;
 	console.log("article URL " + article_url);
+	if (!article_url) {
+		res.writeHead('400');
+		res.end('');
+	}
 	get_clean_article(article_url, res);
 }
 
