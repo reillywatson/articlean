@@ -37,6 +37,7 @@ function handler (req, res) {
 	if (!article_url) {
 		res.writeHead('400');
 		res.end('');
+		return;
 	}
 	get_clean_article(article_url, res);
 }
