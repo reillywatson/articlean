@@ -18,7 +18,6 @@ var readSize = '20';
 **/
 var readability = {
     version:                '1.7.1',
-    emailSrc:               'http://lab.arc90.com/experiments/readability/email.php',
     iframeLoads:             0,
     convertLinksToFootnotes: false,
     reversePageScroll:       false, /* If they hold shift and hit space, scroll up */
@@ -95,7 +94,6 @@ var readability = {
         /* Build readability's DOM tree */
         var overlay        = document.createElement("DIV");
         var innerDiv       = document.createElement("DIV");
-        var articleTools   = readability.getArticleTools();
         var articleTitle   = readability.getArticleTitle();
         var articleContent = readability.grabArticle();
         var articleFooter  = readability.getArticleFooter();
@@ -252,22 +250,6 @@ var readability = {
         }
     },
 
-    /**
-     * Get the article tools Element that has buttons like reload, print, email.
-     *
-     * @return void
-     **/
-    getArticleTools: function () {
-        var articleTools = document.createElement("DIV");
-
-        articleTools.id        = "readTools";
-        articleTools.innerHTML = 
-            "<a href='#' onclick='return window.location.reload()' title='Reload original page' id='reload-page'>Reload Original Page</a>" +
-            "<a href='#' onclick='javascript:window.print();' title='Print page' id='print-page'>Print Page</a>" +
-            "<a href='#' onclick='readability.emailBox(); return false;' title='Email page' id='email-page'>Email Page</a>";
-
-        return articleTools;
-    },
     
     /**
      * Get the article title as an H1.
@@ -1731,25 +1713,6 @@ var readability = {
         }
     },
 
-    
-    /**
-     * Show the email popup.
-     *
-     * @return void
-     **/
-    emailBox: function () {
-        var emailContainerExists = document.getElementById('email-container');
-        if(null !== emailContainerExists)
-        {
-            return;
-        }
-
-        var emailContainer = document.createElement("DIV");
-        emailContainer.setAttribute('id', 'email-container');
-        emailContainer.innerHTML = '<iframe src="'+readability.emailSrc + '?pageUrl='+escape(window.location)+'&pageTitle='+escape(document.title)+'" scrolling="no" onload="readability.removeFrame()" style="width:500px; height: 490px; border: 0;"></iframe>';
-
-        document.body.appendChild(emailContainer);          
-    },
     
     /**
      * Close the email popup. This is a hacktackular way to check if we're in a "close loop".
