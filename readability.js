@@ -2,6 +2,10 @@ var dbg = (typeof console !== 'undefined') ? function(s) {
     console.log("Readability: " + s);
 } : function() {};
 
+var readStyle = '';
+var readMargin = '10';
+var readSize = '20';
+
 /*
  * Readability. An Arc90 Lab Experiment. 
  * Website: http://lab.arc90.com/experiments/readability
@@ -1790,8 +1794,4 @@ var readability = {
     removeFlag: function(flag) {
         readability.flags = readability.flags & ~flag;
     }
-};
-
-exports.init = function() {
-	readability.init();
 };
