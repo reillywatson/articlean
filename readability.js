@@ -98,15 +98,8 @@ var readability = {
         var articleContent = readability.grabArticle();
 
         if(!articleContent) {
-            articleContent    = document.createElement("DIV");
-            articleContent.id = "readability-content";
-            articleContent.innerHTML = [
-                "<p>Sorry, readability was unable to parse this page for content. If you feel like it should have been able to, please <a href='http://code.google.com/p/arc90labs-readability/issues/entry'>let us know by submitting an issue.</a></p>",
-                (readability.frameHack ? "<p><strong>It appears this page uses frames.</strong> Unfortunately, browser security properties often cause Readability to fail on pages that include frames. You may want to try running readability itself on this source page: <a href='" + readability.biggestFrame.src + "'>" + readability.biggestFrame.src + "</a></p>" : ""),
-                "<p>Also, please note that Readability does not play very nicely with front pages. Readability is intended to work on articles with a sizable chunk of text that you'd like to read comfortably. If you're using Readability on a landing page (like nytimes.com for example), please click into an article first before using Readability.</p>"
-            ].join('');
-
             nextPageLink = null;
+			return;
         }
 
         overlay.id              = "readOverlay";

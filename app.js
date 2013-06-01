@@ -12,21 +12,21 @@ app.listen(port, function() {
 
 var get_clean_article = function(url, res) {
 	phantom.create(function(ph) {
-	  return ph.createPage(function(page) {
-	    return page.open(url, function(status) {
-	      console.log("opened url? ", status);
-			return page.injectJs('./readability.js', function() {
-				console.log('inclued readability');
-		      return page.evaluate(function() {
-				readability.init();
-				return document.documentElement.innerHTML;
-		      }, function(result) {
-				res.end(result);
-		        return ph.exit();
-		      });
+		return ph.createPage(function(page) {
+			return page.open(url, function(status) {
+				console.log("opened url? ", status);
+				return page.injectJs('./readability.js', function() {
+					console.log('inclued readability');
+					return page.evaluate(function() {
+						readability.init();
+						return document.documentElement.innerHTML;
+					}, function(result) {
+						res.end(result);
+						return ph.exit();
+					});
+				});
+			});
 		});
-	    });
-	  });
 	});
 };
 
@@ -41,4 +41,3 @@ function handler (req, res) {
 	}
 	get_clean_article(article_url, res);
 }
-
