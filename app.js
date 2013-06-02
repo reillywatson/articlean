@@ -19,6 +19,19 @@ var get_clean_article = function(url, res) {
 					console.log('inclued readability');
 					return page.evaluate(function() {
 						readability.init();
+						var canvas = document.createElement('canvas');
+						var ctx = canvas.getContext('2d');
+						var images = document.documentElement.getElementsByTagName('img');
+						canvas.setAttribute('crossOrigin','anonymous');
+						for (var i = 0; i < images.length; i++) {
+							images[i].setAttribute('crossOrigin','anonymous');
+							canvas.width = images[i].width;
+							canvas.height = images[i].height;
+							ctx.clearRect(0, 0, canvas.width, canvas.height);
+							ctx.drawImage(images[i], 0, 0);
+							var dataURL=canvas.toDataURL('image/jpg');
+							images[i].src = dataURL;//'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==';
+						}
 						return document.documentElement.innerHTML;
 					}, function(result) {
 						res.end(result);
