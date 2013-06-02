@@ -46,7 +46,13 @@ var get_clean_article = function(url, res, inlineImages) {
 function handler (req, res) {
 	var url_parts = url.parse(req.url, true);
 	var article_url = url_parts.query.url;
-	var inlineImages = url_parts.query.inlineImages === 'true';
+	var inline_images = url_parts.query.inlineImages === 'true';
+	var api_key = url_parts.query.apiKey;
+	if (api_key !== '1e203ad5a027436e9f72e1341cb801d9') {
+		res.writeHead('403');
+		res.end('Invalid API key!');
+		return;
+	}
 	console.log("article URL " + article_url);
 	if (!article_url) {
 		res.writeHead('400');
