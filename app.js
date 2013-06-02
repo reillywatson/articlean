@@ -10,33 +10,33 @@ app.listen(port, function() {
 	console.log("Listening on " + port);
 });
 
-var get_clean_article = function(url, res) {
+var get_clean_article = function(url, res, inlineImages) {
 	phantom.create(function(ph) {
 		return ph.createPage(function(page) {
+			page.set('settings.webSecurityEnabled', false);
 			return page.open(url, function(status) {
-				console.log("opened url? ", status);
 				return page.injectJs('./readability.js', function() {
-					console.log('inclued readability');
-					return page.evaluate(function() {
+					return page.evaluate(function(inlineImages) {
 						readability.init();
-						var canvas = document.createElement('canvas');
-						var ctx = canvas.getContext('2d');
-						var images = document.documentElement.getElementsByTagName('img');
-						canvas.setAttribute('crossOrigin','anonymous');
-						for (var i = 0; i < images.length; i++) {
-							images[i].setAttribute('crossOrigin','anonymous');
-							canvas.width = images[i].width;
-							canvas.height = images[i].height;
-							ctx.clearRect(0, 0, canvas.width, canvas.height);
-							ctx.drawImage(images[i], 0, 0);
-							var dataURL=canvas.toDataURL('image/jpg');
-							images[i].src = dataURL;//'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==';
+						if (inlineImages) {
+							var canvas = document.createElement('canvas');
+							var ctx = canvas.getContext('2d');
+							var images = document.documentElement.getElementsByTagName('img');
+							for (var i = 0; i < images.length; i++) {
+								canvas.width = images[i].width;
+								canvas.height = images[i].height;
+								ctx.clearRect(0, 0, canvas.width, canvas.height);
+								ctx.drawImage(images[i], 0, 0);
+								var url = images[i].src;
+								var dataURL=canvas.toDataURL('image/png');
+								images[i].src = dataURL;
+							}
 						}
 						return document.documentElement.innerHTML;
 					}, function(result) {
 						res.end(result);
 						return ph.exit();
-					});
+					}, inlineImages);
 				});
 			});
 		});
@@ -46,11 +46,12 @@ var get_clean_article = function(url, res) {
 function handler (req, res) {
 	var url_parts = url.parse(req.url, true);
 	var article_url = url_parts.query.url;
+	var inlineImages = url_parts.query.inlineImages === 'true';
 	console.log("article URL " + article_url);
 	if (!article_url) {
 		res.writeHead('400');
 		res.end('');
 		return;
 	}
-	get_clean_article(article_url, res);
+	get_clean_article(article_url, res, inlineImages);
 }
