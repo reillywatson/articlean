@@ -62,7 +62,7 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 
 function handler (req, res) {
 	var url_parts = url.parse(req.url, true);
-	var article_url = url_parts.query.url;
+	var article_url = unescape(url_parts.query.url);
 	var inline_images = url_parts.query.inlineImages === 'true';
 	var api_key = url_parts.query.apiKey;
 	var accept_encoding = req.headers['accept-encoding'];
