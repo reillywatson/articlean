@@ -59,5 +59,5 @@ function handler (req, res) {
 		res.end('');
 		return;
 	}
-	get_clean_article(article_url, res, inlineImages);
+	get_clean_article(article_url, res, inline_images);
 }
