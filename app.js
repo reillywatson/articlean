@@ -44,6 +44,15 @@ var compress = function(data, res, acceptEncoding, callback) {
 	}
 }
 
+var phantomPort = 10000;
+var get_phantom_port = function() {
+	phantomPort++;
+	if (phantomPort > 50000) {
+		phantomPort = 10000;
+	}
+	return phantomPort;
+}
+
 var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 	phantom.create(function(ph) {
 		return ph.createPage(function(page) {
@@ -57,7 +66,7 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 				});
 			});
 		});
-	});
+	}, 'phantomjs', get_phantom_port());
 };
 
 function handler (req, res) {
