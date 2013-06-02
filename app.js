@@ -1,3 +1,6 @@
+require('nodetime').profile({
+	accountKey: '24e45f192591e4c06a15942d87750984ee0aa308'
+});
 var http = require('http');
 var fs = require('fs');
 var phantom = require('phantom');
