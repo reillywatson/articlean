@@ -94,8 +94,7 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 					return page.injectJs('./readability.js', function() {
 						return page.evaluate(cleanup_html, function(html) {
 							compress(html, res, acceptEncoding);
-							activePhantoms--;
-							return ph.exit();
+							ph.exit();
 						}, inlineImages);
 					});
 				});
@@ -104,7 +103,7 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 	}, function() {
 		res.writeHead(408);
 		res.end('Timeout');
-	}, 250, 10000);
+	}, 250, 20000);
 };
 
 function handler(req, res) {
