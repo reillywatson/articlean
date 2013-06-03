@@ -88,6 +88,7 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 	waitFor(function() { return activePhantoms < maxActivePhantoms; }, function() {
 		phantom.create(function(ph) {
 			activePhantoms++;
+			console.log('active phantoms: ', activePhantoms);
 			return ph.createPage(function(page) {
 				page.set('settings.webSecurityEnabled', false);
 				return page.open(url, function(status) {
