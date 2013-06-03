@@ -75,7 +75,6 @@ var waitFor = function(fn, callback, timeoutCallback, timeout, maxTimeout) {
 			callback();
 		}
 		else {
-			console.log('waiting', timeout);
 			setTimeout(function() {
 				waitForRec(timeSoFar + timeout);
 			}, timeout);
