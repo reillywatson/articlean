@@ -61,11 +61,11 @@ var get_phantom_port = function() {
 	return phantomPort;
 };
 
-var totalMem = os.totalmem();
+var totalMem = 512*1024*1024;//os.totalmem();
 // 3 phantoms per server, they use waaay too much memory :(
 // maybe we'll have to replace it with jsdom.
 var activePhantoms = 0;
-var maxActivePhantoms = 3;
+var maxActivePhantoms = Math.floor(totalMem / 167772160);
 
 var waitFor = function(fn, callback, timeoutCallback, timeout, maxTimeout) {
 	var waitForRec = function(timeSoFar) {
@@ -94,13 +94,13 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 	waitFor(function() { return activePhantoms < maxActivePhantoms; }, function() {
 		activePhantoms++;
 		phantom.create(function(ph) {
-			ph.stderr.on('data', function(data) {
+			/*ph.stderr.on('data', function(data) {
 				if (data.toString('utf8').match(/PhantomJS has crashed/)) {
 					console.log('crash!!!!!!');
 					ph.exit();
 					activePhantoms--;
 			      }
-			});
+			});*/
 			console.log('active phantoms: ', activePhantoms);
 			return ph.createPage(function(page) {
 				page.set('settings.webSecurityEnabled', false);
@@ -122,7 +122,6 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 };
 
 function handler(req, res) {
-	console.log('memory', os.totalmem());
 	var url_parts = url.parse(req.url, true);
 	var article_url = url_parts.query.url;
 	var inline_images = url_parts.query.inlineImages === 'true';
