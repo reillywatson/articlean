@@ -95,6 +95,7 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 						return page.evaluate(cleanup_html, function(html) {
 							compress(html, res, acceptEncoding);
 							ph.exit();
+							activePhantoms--;
 						}, inlineImages);
 					});
 				});
