@@ -86,8 +86,8 @@ var waitFor = function(fn, callback, timeoutCallback, timeout, maxTimeout) {
 
 var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 	waitFor(function() { return activePhantoms < maxActivePhantoms; }, function() {
+		activePhantoms++;
 		phantom.create(function(ph) {
-			activePhantoms++;
 			console.log('active phantoms: ', activePhantoms);
 			return ph.createPage(function(page) {
 				page.set('settings.webSecurityEnabled', false);
