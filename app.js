@@ -39,16 +39,17 @@ var cleanup_html = function(inlineImages) {
 }
 
 var compress = function(data, res, acceptEncoding, callback) {
-	var writeData = function(err, buffer) { res.end(buffer); }
+	var writeData = function(err, buffer, headOptions) {
+		headOptions['content-length'] = buffer.length;
+		res.writeHead(200, headOptions);
+		res.end(buffer);
+	}
 	if (acceptEncoding.match(/\bdeflate\b/)) {
-		res.writeHead(200, { 'content-encoding': 'deflate' });
-		zlib.deflateRaw(data, writeData);
+		zlib.deflateRaw(data, function(err, buffer){writeData(err, buffer, {'content-encoding':'deflate'});});
 	} else if (acceptEncoding.match(/\bgzip\b/)) {
-		res.writeHead(200, { 'content-encoding': 'gzip' });
-		zlib.gzip(data, writeData);
+		zlib.gzip(data, function(err, buffer){writeData(err, buffer, {'content-encoding':'gzip'});});
 	} else {
-		res.writeHead(200, {});
-		writeData(null, data);
+		writeData(null, data, {});
 	}
 }
 
