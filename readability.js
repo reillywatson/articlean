@@ -29,7 +29,7 @@ var readability = {
     biggestFrame:            false,
     bodyCache:               null,   /* Cache the body HTML in case we need to re-use it later */
     flags:                   0x1 | 0x2 | 0x4,   /* Start with all flags set. */
-
+	loadFinished: '',
     /* constants */
     FLAG_STRIP_UNLIKELYS:     0x1,
     FLAG_WEIGHT_CLASSES:      0x2,
@@ -99,6 +99,7 @@ var readability = {
 
         if(!articleContent) {
             nextPageLink = null;
+			readability.loadFinished = 'no article content';
 			return;
         }
 
@@ -140,20 +141,6 @@ var readability = {
             readOverlay.style.overflow = 'auto';
         }
 
-        /**
-         * If someone tries to use Readability on a site's root page, give them a warning about usage.
-        **/
-        if((window.location.protocol + "//" + window.location.host + "/") == window.location.href)
-        {
-            articleContent.style.display = "none";
-            var rootWarning = document.createElement('p');
-                rootWarning.id = "readability-warning";
-                rootWarning.innerHTML = "<em>Readability</em> was intended for use on individual articles and not home pages. " +
-                    "If you'd like to try rendering this page anyway, <a onClick='javascript:document.getElementById(\"readability-warning\").style.display=\"none\";document.getElementById(\"readability-content\").style.display=\"block\";'>click here</a> to continue.";
-
-            innerDiv.insertBefore( rootWarning, articleContent );
-        }
-
         readability.postProcessContent(articleContent);
 
         window.scrollTo(0, 0);
@@ -172,6 +159,9 @@ var readability = {
                 readability.appendNextPage(nextPageLink);
             }, 500);
         }
+		else {
+			readability.loadFinished = 'no next';
+		}
 
         /** Smooth scrolling **/
         document.onkeydown = function(e) {
@@ -1376,7 +1366,8 @@ var readability = {
                         content      =  readability.grabArticle(page);
 
                     if(!content) {
-                        dbg("No content found in page to append. Aborting.")
+                        dbg("No content found in page to append. Aborting.");
+						readability.loadFinished = 'no content';
                         return;
                     }
 
@@ -1393,6 +1384,7 @@ var readability = {
                                 dbg('Duplicate of page ' + i + ' - skipping.');
                                 articlePage.style.display = 'none';
                                 readability.parsedPages[pageUrl] = true;
+								readability.loadFinished = 'duplicate page';
                                 return;
                             }
                         }
@@ -1414,6 +1406,9 @@ var readability = {
 
                     if(nextPageLink) {
                         readability.appendNextPage(nextPageLink);
+                    }
+                    else {
+                        readability.loadFinished = 'no next link';
                     }
                 }
             });
