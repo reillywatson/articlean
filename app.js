@@ -116,6 +116,7 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 									console.log('finished:', fin);
 									page.evaluate(inline_images, function(html) {
 										console.log('inlined those suckers!');
+										console.log(req);
 										compress(html, res, acceptEncoding);
 										killPhantom(ph, page);
 									}, inlineImages);
