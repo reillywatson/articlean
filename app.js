@@ -16,6 +16,10 @@ app.listen(port, function() {
 });
 
 var inline_images = function(inline) {
+	var scripts = document.documentElement.getElementsByTagName('script');
+	for (var i = 0; i < scripts.length; i++) {
+		scripts[i].parentNode.removeChild(scripts[i]);
+	}
 	if (inline) {
 		var canvas = document.createElement('canvas');
 		var ctx = canvas.getContext('2d');
@@ -94,6 +98,7 @@ var killPhantom = function(ph, page) {
 var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
 	var reqClosed = false;
 	req.on('close', function() {
+		console.log('closed!!!!!!!!!');
 		reqClosed = true;
 	});
 	waitFor(function() { return activePhantoms < maxActivePhantoms; }, function() {
