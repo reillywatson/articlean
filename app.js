@@ -81,9 +81,10 @@ var waitFor = function(fn, callback, timeoutCallback, timeout, maxTimeout) {
 	waitForRec(0);
 };
 
-var killPhantom = function(ph) {
-	console.log('killPhantom', ph.running);
-	if (ph.running) {
+var killPhantom = function(ph, page) {
+	console.log('killPhantom', ph && ph.running);
+	if (ph && ph.running) {
+		page && page.close();
 		ph.exit();
 		ph.running = false;
 		activePhantoms--;
@@ -95,9 +96,9 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 		activePhantoms++;
 		phantom.create(function(ph) {
 			ph.running = true;
-			setTimeout(function() { killPhantom(ph); }, 30000);
 			console.log('active phantoms: ', activePhantoms);
 			return ph.createPage(function(page) {
+				setTimeout(function() { killPhantom(ph, page); }, 30000);
 				page.set('settings.webSecurityEnabled', false);
 				return page.open(url, function(status) {
 					console.log('status: ', status);
@@ -114,8 +115,9 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 								else {
 									console.log('finished:', fin);
 									page.evaluate(inline_images, function(html) {
+										console.log('inlined those suckers!');
 										compress(html, res, acceptEncoding);
-										killPhantom(ph);
+										killPhantom(ph, page);
 									}, inlineImages);
 								}
 							};
