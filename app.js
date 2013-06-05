@@ -86,22 +86,21 @@ var waitFor = function(fn, callback, timeoutCallback, timeout, maxTimeout) {
 	waitForRec(0);
 };
 
-phantom.onExit = function() {
-	console.log('exited!!!!!');
-	activePhantoms--;
+var killPhantom = function(ph) {
+	console.log('killPhantom', ph.running);
+	if (ph.running) {
+		ph.exit();
+		ph.running = false;
+		activePhantoms--;
+	}
 };
 
 var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 	waitFor(function() { return activePhantoms < maxActivePhantoms; }, function() {
 		activePhantoms++;
 		phantom.create(function(ph) {
-			/*ph.stderr.on('data', function(data) {
-				if (data.toString('utf8').match(/PhantomJS has crashed/)) {
-					console.log('crash!!!!!!');
-					ph.exit();
-					activePhantoms--;
-			      }
-			});*/
+			ph.running = true;
+			setTimeout(function() { killPhantom(ph); }, 30000);
 			console.log('active phantoms: ', activePhantoms);
 			return ph.createPage(function(page) {
 				page.set('settings.webSecurityEnabled', false);
@@ -109,8 +108,7 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 					return page.injectJs('./readability.js', function() {
 						return page.evaluate(cleanup_html, function(html) {
 							compress(html, res, acceptEncoding);
-							ph.exit();
-							activePhantoms--;
+							killPhantom(ph);
 						}, inlineImages);
 					});
 				});
