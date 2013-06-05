@@ -35,7 +35,6 @@ var cleanup_html = function(inlineImages) {
 	}
 	catch (err) {
 	}
-	return document.documentElement.innerHTML;
 }
 
 var compress = function(data, res, acceptEncoding, callback) {
@@ -106,7 +105,7 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 				page.set('settings.webSecurityEnabled', false);
 				return page.open(url, function(status) {
 					return page.injectJs('./readability.js', function() {
-						return page.evaluate(cleanup_html, function(html) {
+						return page.evaluate(cleanup_html, function() {
 							var isLoadFinished = function() { return readability.loadFinished !== ""; }
 							var checkLoadFinished = function(fin) {
 								console.log(fin);
@@ -114,7 +113,7 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 									setTimeout(function() { page.evaluate(isLoadFinished, checkLoadFinished); }, 100);
 								}
 								else {
-									page.evaluate(function() { return document.documentElement.innerHTML; }, function(html) {
+									page.evaluate(function() { return document.documentElement.outerHTML; }, function(html) {
 										compress(html, res, acceptEncoding);
 										killPhantom(ph);
 									});
