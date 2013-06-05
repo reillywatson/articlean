@@ -16,7 +16,7 @@ app.listen(port, function() {
 });
 
 var inline_images = function(inline) {
-	var scripts = document.documentElement.getElementsByTagName('script');
+	var scripts = document.documentElement.getElementsByTagName('script').concat(document.documentElement.getElementsByTagName('link'));
 	for (var i = 0; i < scripts.length; i++) {
 		scripts[i].parentNode.removeChild(scripts[i]);
 	}
