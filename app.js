@@ -107,8 +107,20 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 				return page.open(url, function(status) {
 					return page.injectJs('./readability.js', function() {
 						return page.evaluate(cleanup_html, function(html) {
-							compress(html, res, acceptEncoding);
-							killPhantom(ph);
+							var isLoadFinished = function() { return readability.loadFinished(); }
+							var checkLoadFinished = function(fin) {
+								console.log(fin);
+								if (!fin) {
+									setTimeout(function() { page.evaluate(isLoadFinished, checkLoadFinished); }, 100);
+								}
+								else {
+									page.evaluate(function() { return document.documentElement.innerHTML; }, function(html) {
+										compress(html, res, acceptEncoding);
+										killPhantom(ph);
+									});
+								}
+							};
+							checkLoadFinished(false);
 						}, inlineImages);
 					});
 				});
