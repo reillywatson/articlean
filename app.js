@@ -17,8 +17,9 @@ app.listen(port, function() {
 
 var inline_images = function(inline) {
 	var scripts = document.documentElement.getElementsByTagName('script');
-	scripts = scripts.concat(document.documentElement.getElementsByTagName('link'));
-	for (var i = 0; i < scripts.length; i++) {
+	var links = document.documentElement.getElementsByTagName('link');
+	var bannedElements = scripts.concat(links);
+	for (var i = 0; i < bannedElements.length; i++) {
 		scripts[i].parentNode.removeChild(scripts[i]);
 	}
 	if (inline) {
