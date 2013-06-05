@@ -15,26 +15,22 @@ app.listen(port, function() {
 	console.log("Listening on " + port);
 });
 
-var cleanup_html = function(inlineImages) {
-	try {
-		readability.init();
-		if (inlineImages) {
-			var canvas = document.createElement('canvas');
-			var ctx = canvas.getContext('2d');
-			var images = document.documentElement.getElementsByTagName('img');
-			for (var i = 0; i < images.length; i++) {
-				canvas.width = images[i].width;
-				canvas.height = images[i].height;
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				ctx.drawImage(images[i], 0, 0);
-				var url = images[i].src;
-				var dataURL=canvas.toDataURL('image/png');
-				images[i].src = dataURL;
-			}
+var inline_images = function(inline) {
+	if (inline) {
+		var canvas = document.createElement('canvas');
+		var ctx = canvas.getContext('2d');
+		var images = document.documentElement.getElementsByTagName('img');
+		for (var i = 0; i < images.length; i++) {
+			canvas.width = images[i].width;
+			canvas.height = images[i].height;
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			ctx.drawImage(images[i], 0, 0);
+			var url = images[i].src;
+			var dataURL=canvas.toDataURL('image/png');
+			images[i].src = dataURL;
 		}
 	}
-	catch (err) {
-	}
+	return document.documentElement.outerHTML;
 }
 
 var compress = function(data, res, acceptEncoding, callback) {
@@ -106,7 +102,8 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 				return page.open(url, function(status) {
 					var startTime = new Date().getTime();
 					return page.injectJs('./readability.js', function() {
-						return page.evaluate(cleanup_html, function() {
+						return page.evaluate(function() { readability.init(); }, function() {
+							console.log('initialized');
 							var isLoadFinished = function() { return readability.loadFinished; }
 							var checkLoadFinished = function(fin) {
 								console.log(fin);
@@ -115,14 +112,14 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 								}
 								else {
 									console.log('finished:', fin);
-									page.evaluate(function() { return document.documentElement.outerHTML; }, function(html) {
+									page.evaluate(inline_images, function(html) {
 										compress(html, res, acceptEncoding);
 										killPhantom(ph);
-									});
+									}, inlineImages);
 								}
 							};
 							checkLoadFinished('');
-						}, inlineImages);
+						});
 					});
 				});
 			});
