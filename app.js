@@ -95,7 +95,7 @@ var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
 	var reqClosed = false;
 	req.on('close', function() {
 		reqClosed = true;
-	}
+	});
 	waitFor(function() { return activePhantoms < maxActivePhantoms; }, function() {
 		activePhantoms++;
 		phantom.create(function(ph) {
