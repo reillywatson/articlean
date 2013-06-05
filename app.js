@@ -92,6 +92,10 @@ var killPhantom = function(ph, page) {
 };
 
 var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
+	var reqClosed = false;
+	req.on('close', function() {
+		reqClosed = true;
+	}
 	waitFor(function() { return activePhantoms < maxActivePhantoms; }, function() {
 		activePhantoms++;
 		phantom.create(function(ph) {
@@ -104,10 +108,13 @@ var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
 					console.log('status: ', status);
 					var startTime = new Date().getTime();
 					return page.injectJs('./readability.js', function() {
+						if (reqClosed) { return; }
 						return page.evaluate(function() { readability.init(); }, function() {
+							if (reqClosed) { return; }
 							console.log('initialized');
 							var isLoadFinished = function() { return readability.loadFinished; }
 							var checkLoadFinished = function(fin) {
+								if (reqClosed) { return; }
 								console.log(fin);
 								if (!fin && (new Date().getTime()) - startTime < 20000) {
 									setTimeout(function() { page.evaluate(isLoadFinished, checkLoadFinished); }, 100);
@@ -115,8 +122,8 @@ var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
 								else {
 									console.log('finished:', fin);
 									page.evaluate(inline_images, function(html) {
+										if (reqClosed) { return; }
 										console.log('inlined those suckers!');
-										console.log(req);
 										compress(html, res, acceptEncoding);
 										killPhantom(ph, page);
 									}, inlineImages);
