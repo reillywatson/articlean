@@ -16,10 +16,9 @@ app.listen(port, function() {
 });
 
 var inline_images = function(inline) {
-	var scripts = document.documentElement.getElementsByTagName('script');
-	var links = document.documentElement.getElementsByTagName('link');
-	var bannedElements = scripts.concat(links);
-	for (var i = 0; i < bannedElements.length; i++) {
+	var scripts = Array.prototype.slice.call(document.documentElement.getElementsByTagName('script'));
+	scripts = scripts.concat(Array.prototype.slice.call(document.documentElement.getElementsByTagName('link')));
+	for (var i = 0; i < scripts.length; i++) {
 		scripts[i].parentNode.removeChild(scripts[i]);
 	}
 	if (inline) {
