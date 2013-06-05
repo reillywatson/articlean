@@ -104,12 +104,13 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 			return ph.createPage(function(page) {
 				page.set('settings.webSecurityEnabled', false);
 				return page.open(url, function(status) {
+					var startTime = new Date().getTime();
 					return page.injectJs('./readability.js', function() {
 						return page.evaluate(cleanup_html, function() {
 							var isLoadFinished = function() { return readability.loadFinished; }
 							var checkLoadFinished = function(fin) {
 								console.log(fin);
-								if (!fin) {
+								if (!fin && (new Date().getTime()) - startTime < 25000) {
 									setTimeout(function() { page.evaluate(isLoadFinished, checkLoadFinished); }, 100);
 								}
 								else {
