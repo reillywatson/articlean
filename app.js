@@ -110,10 +110,11 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 							var isLoadFinished = function() { return readability.loadFinished; }
 							var checkLoadFinished = function(fin) {
 								console.log(fin);
-								if (!fin && (new Date().getTime()) - startTime < 25000) {
+								if (!fin && (new Date().getTime()) - startTime < 20000) {
 									setTimeout(function() { page.evaluate(isLoadFinished, checkLoadFinished); }, 100);
 								}
 								else {
+									console.log('finished:', fin);
 									page.evaluate(function() { return document.documentElement.outerHTML; }, function(html) {
 										compress(html, res, acceptEncoding);
 										killPhantom(ph);
