@@ -91,7 +91,7 @@ var killPhantom = function(ph, page) {
 	}
 };
 
-var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
+var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
 	waitFor(function() { return activePhantoms < maxActivePhantoms; }, function() {
 		activePhantoms++;
 		phantom.create(function(ph) {
@@ -154,5 +154,5 @@ function handler(req, res) {
 		res.end('');
 		return;
 	}
-	get_clean_article(article_url, res, inline_images, accept_encoding);
+	get_clean_article(article_url, req, res, inline_images, accept_encoding);
 };
