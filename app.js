@@ -100,6 +100,7 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 			return ph.createPage(function(page) {
 				page.set('settings.webSecurityEnabled', false);
 				return page.open(url, function(status) {
+					console.log('status: ', status);
 					var startTime = new Date().getTime();
 					return page.injectJs('./readability.js', function() {
 						return page.evaluate(function() { readability.init(); }, function() {
