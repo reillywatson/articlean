@@ -114,21 +114,20 @@ var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
 					console.log('status: ', status);
 					var startTime = new Date().getTime();
 					return page.injectJs('./readability.js', function() {
-						if (reqClosed) { return; }
+						if (reqClosed) { killPhantom(ph, page); return; }
 						return page.evaluate(function() { readability.init(); }, function() {
-							if (reqClosed) { return; }
+							if (reqClosed) { killPhantom(ph, page); return; }
 							console.log('initialized');
 							var isLoadFinished = function() { return readability.loadFinished; }
 							var checkLoadFinished = function(fin) {
-								if (reqClosed) { return; }
-								console.log(fin);
+								if (reqClosed) { killPhantom(ph, page); return; }
 								if (!fin && (new Date().getTime()) - startTime < 20000) {
 									setTimeout(function() { page.evaluate(isLoadFinished, checkLoadFinished); }, 100);
 								}
 								else {
 									console.log('finished:', fin);
 									page.evaluate(inline_images, function(html) {
-										if (reqClosed) { return; }
+										if (reqClosed) { killPhantom(ph, page); return; }
 										console.log('inlined those suckers!');
 										compress(html, res, acceptEncoding);
 										killPhantom(ph, page);
