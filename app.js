@@ -107,7 +107,7 @@ var get_clean_article = function(url, res, inlineImages, acceptEncoding) {
 				return page.open(url, function(status) {
 					return page.injectJs('./readability.js', function() {
 						return page.evaluate(cleanup_html, function(html) {
-							var isLoadFinished = function() { return readability.loadFinished(); }
+							var isLoadFinished = function() { return readability.loadFinished !== ""; }
 							var checkLoadFinished = function(fin) {
 								console.log(fin);
 								if (!fin) {
