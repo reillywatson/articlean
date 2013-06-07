@@ -27,24 +27,16 @@ var inline_images = function(inline) {
 	meta.setAttribute('charset','utf-8');
 	document.getElementsByTagName('head')[0].appendChild(meta);
 	if (inline) {
-		console.warn('1');
 		var canvas = document.createElement('canvas');
-		console.warn('2');
 		var ctx = canvas.getContext('2d');
-		console.warn('3');
 		var images = document.documentElement.getElementsByTagName('img');
 		for (var i = 0; i < images.length; i++) {
 			canvas.width = images[i].width;
 			canvas.height = images[i].height;
-			console.warn('4');
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			console.warn('5');
 			ctx.drawImage(images[i], 0, 0);
-			console.warn('6');
 			var dataURL=canvas.toDataURL('image/jpeg', 0.9);
-			console.warn('7');
 			images[i].src = dataURL;
-			console.warn('8');
 		}
 	}
 	return document.documentElement.outerHTML;
