@@ -23,7 +23,7 @@ var inline_images = function(inline) {
 		scripts[i].parentNode.removeChild(scripts[i]);
 	}
 	var meta=document.createElement('meta');
-	meta.charset = 'utf-8';
+	meta.setAttribute('charset','utf-8');
 	document.getElementsByTagName('head')[0].appendChild(meta);
 	if (inline) {
 		var canvas = document.createElement('canvas');
