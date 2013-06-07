@@ -70,7 +70,7 @@ var totalMem = 512*1024*1024;//os.totalmem();
 // 3 phantoms per server, they use waaay too much memory :(
 // maybe we'll have to replace it with jsdom.
 var activePhantoms = 0;
-var maxActivePhantoms = Math.floor(totalMem / (80*1024*1024));
+var maxActivePhantoms = Math.floor(totalMem / (100*1024*1024));
 
 var waitFor = function(fn, callback, timeoutCallback, timeout, maxTimeout) {
 	var waitForRec = function(timeSoFar) {
