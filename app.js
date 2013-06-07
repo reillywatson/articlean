@@ -101,37 +101,32 @@ var killPhantom = function(ph, page) {
 };
 
 var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
-	var reqClosed = false;
-	req.on('close', function() {
-		console.log('closed!!!!!!!!!');
-		reqClosed = true;
-	});
 	waitFor(function() { return activePhantoms < maxActivePhantoms; }, function() {
 		activePhantoms++;
 		phantom.create(function(ph) {
 			ph.running = true;
 			console.log('active phantoms: ', activePhantoms);
 			return ph.createPage(function(page) {
+				req.on('close', function() {
+					killPhantom(ph, page);
+					console.log('closed!!!!!!!!!');
+				});
 				setTimeout(function() { killPhantom(ph, page); }, 30000);
 				page.set('settings.webSecurityEnabled', false);
 				return page.open(url, function(status) {
 					console.log('status: ', status);
 					var startTime = new Date().getTime();
 					return page.injectJs('./readability.js', function() {
-						if (reqClosed) { killPhantom(ph, page); return; }
 						return page.evaluate(function() { readability.init(); }, function() {
-							if (reqClosed) { killPhantom(ph, page); return; }
 							console.log('initialized');
 							var isLoadFinished = function() { return readability.loadFinished; }
 							var checkLoadFinished = function(fin) {
-								if (reqClosed) { killPhantom(ph, page); return; }
 								if (!fin && (new Date().getTime()) - startTime < 20000) {
 									setTimeout(function() { page.evaluate(isLoadFinished, checkLoadFinished); }, 100);
 								}
 								else {
 									console.log('finished:', fin);
 									page.evaluate(inline_images, function(html) {
-										if (reqClosed) { killPhantom(ph, page); return; }
 										console.log('inlined those suckers!');
 										compress(html, res, acceptEncoding);
 										killPhantom(ph, page);
