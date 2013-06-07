@@ -18,9 +18,13 @@ app.listen(port, function() {
 var inline_images = function(inline) {
 	var scripts = Array.prototype.slice.call(document.documentElement.getElementsByTagName('script'));
 	scripts = scripts.concat(Array.prototype.slice.call(document.documentElement.getElementsByTagName('link')));
+	scripts = scripts.concat(Array.prototype.slice.call(document.documentElement.getElementsByTagName('meta')));
 	for (var i = 0; i < scripts.length; i++) {
 		scripts[i].parentNode.removeChild(scripts[i]);
 	}
+	var meta=document.createElement('meta');
+	meta.charset = 'utf-8';
+	document.getElementsByTagName('head')[0].appendChild(meta);
 	if (inline) {
 		var canvas = document.createElement('canvas');
 		var ctx = canvas.getContext('2d');
