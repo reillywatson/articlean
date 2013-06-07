@@ -35,7 +35,7 @@ var inline_images = function(inline) {
 			canvas.height = images[i].height;
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			ctx.drawImage(images[i], 0, 0);
-			var dataURL=canvas.toDataURL('image/jpeg', 0.9);
+			var dataURL=canvas.toDataURL('image/jpeg', 0.8);
 			images[i].src = dataURL;
 		}
 	}
