@@ -103,8 +103,12 @@ var killPhantom = function(ph, page) {
 var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
 	waitFor(function() { return activePhantoms < maxActivePhantoms; }, function() {
 		activePhantoms++;
+		var creatingPhantom = true;
+		setTimeout(function() { if (creatingPhantom) { console.log("didn't create?"); activePhantoms--; } }, 30000);
 		phantom.create(function(ph) {
+			creatingPhantom = false;
 			ph.running = true;
+			setTimeout(function() { killPhantom(ph, null); }, 35000);
 			console.log('active phantoms: ', activePhantoms);
 			return ph.createPage(function(page) {
 				req.on('close', function() {
