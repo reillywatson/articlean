@@ -158,7 +158,7 @@ function handler(req, res) {
 	if (!accept_encoding) {
 		accept_encoding = '';
 	}
-	if (api_key !== '1e203ad5a027436e9f72e1341cb801d9') {
+	if (api_key !== '1e203ad5a027436e9f72e1341cb801d9' && !process.env.DEMOMODE) {
 		res.writeHead('403');
 		res.end('Invalid API key!');
 		return;
