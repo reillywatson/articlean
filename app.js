@@ -151,7 +151,13 @@ var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
 
 function handler(req, res) {
 	var url_parts = url.parse(req.url, true);
-	var article_url = unescape(url_parts.query.url);
+	var escapedUrl = url_parts.query.url;
+	if (!escapedUrl) {
+		res.writeHead('400');
+		res.end('');
+		return;
+	}
+	var article_url = unescape(escapedUrl);
 	var inline_images = url_parts.query.inlineImages === 'true';
 	var api_key = url_parts.query.apiKey;
 	var accept_encoding = req.headers['accept-encoding'];
@@ -161,12 +167,6 @@ function handler(req, res) {
 	if (api_key !== '1e203ad5a027436e9f72e1341cb801d9' && !process.env.DEMOMODE) {
 		res.writeHead('403');
 		res.end('Invalid API key!');
-		return;
-	}
-	console.log("article URL " + article_url);
-	if (!article_url) {
-		res.writeHead('400');
-		res.end('');
 		return;
 	}
 	get_clean_article(article_url, req, res, inline_images, accept_encoding);
