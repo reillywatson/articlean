@@ -1,6 +1,7 @@
 require('nodetime').profile({
 	accountKey: '24e45f192591e4c06a15942d87750984ee0aa308'
 });
+var express = require('express');
 var http = require('http');
 var fs = require('fs');
 var phantom = require('phantom');
@@ -8,13 +9,17 @@ var url = require('url');
 var zlib = require('zlib');
 var os = require('os');
 
-var app = http.createServer(handler);
-
+var app = express();
+//var app = http.createServer(handler);
+app.use('/article', handler);
+app.use(express.static(__dirname + '/site'));
 var port = process.env.PORT || 5000;
+app.listen(port);
+/*
 app.listen(port, function() {
 	console.log("Listening on " + port);
 });
-
+*/
 // this jazz really doesn't work for big images, because canvas.toDataURL() fails all over the place
 var inline_images = function(inline) {
 	var scripts = Array.prototype.slice.call(document.documentElement.getElementsByTagName('script'));
@@ -149,7 +154,7 @@ var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
 	}, 250, 20000);
 };
 
-function handler(req, res) {
+function handler(req, res, next) {
 	var url_parts = url.parse(req.url, true);
 	var escapedUrl = url_parts.query.url;
 	if (!escapedUrl) {

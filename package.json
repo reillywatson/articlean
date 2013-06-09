@@ -2,6 +2,7 @@
 	"name" : "Articlean",
 	"version" : "0.0.1",
 	"dependencies" : {
+		"express" : "3.2.6",
 		"nodetime" : "0.8.12",
 		"phantom" : "0.5.1"
 	},
