@@ -154,7 +154,7 @@ function handler(req, res) {
 	var escapedUrl = url_parts.query.url;
 	if (!escapedUrl) {
 		res.writeHead('400');
-		res.end('');
+		res.end('Please specify a URL.');
 		return;
 	}
 	var article_url = unescape(escapedUrl);
