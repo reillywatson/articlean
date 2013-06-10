@@ -1304,8 +1304,6 @@ var readability = {
         articlePage.className = 'page';
         articlePage.innerHTML = '<p class="page-separator" title="Page ' + readability.curPageNum + '">&sect;</p>';
 
-        document.getElementById("readability-content").appendChild(articlePage);
-
         if(readability.curPageNum > readability.maxPages) {
             var nextPageLink = "<div style='text-align: center'><a href='" + nextPageLink + "'>View Next Page</a></div>";
 
@@ -1393,6 +1391,7 @@ var readability = {
                     readability.removeScripts(content);
 
                     thisPage.innerHTML = thisPage.innerHTML + content.innerHTML;
+			        document.getElementById("readability-content").appendChild(thisPage);
 
                     /**
                      * After the page has rendered, post process the content. This delay is necessary because,
