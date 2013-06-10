@@ -46,6 +46,10 @@ var createUser = function(req, res, id) {
 };
 
 app.post("/plans/signup", function(req, res) {
+	if (process.env.DEMOMODE) {
+		res.end('404');
+		return;
+	}
 	console.log('body', req.body);
 	if (req.body.plan === 'Free') {
 		createUser(req, res, randomString(256));
@@ -229,6 +233,10 @@ function handler(req, res, next) {
 	if (!accept_encoding) {
 		accept_encoding = '';
 	}
+	if (process.env.DEMOMODE) {
+		get_clean_article(article_url, req, res, inline_images, accept_encoding);
+		return;
+	}
 	pg.connect(dbConnectString, function(err, client, done) {
 		if (err) {
 			console.log("can't connect", err);
@@ -241,7 +249,7 @@ function handler(req, res, next) {
 			if (err) {
 				console.log('err',err);
 			}
-			if (process.env.DEMOMODE || (result.rows && result.rows.length > 0)) {
+			if (result.rows && result.rows.length > 0) {
 				get_clean_article(article_url, req, res, inline_images, accept_encoding);			
 			}
 			else {
