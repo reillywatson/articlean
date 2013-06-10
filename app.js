@@ -6,7 +6,7 @@ var phantom = require('phantom');
 var url = require('url');
 var zlib = require('zlib');
 var os = require('os');
-var stripe = require('stripe')('sk_test_eVW3CrjGJdsZHECe67dlpKnZ')
+var stripe = require('stripe')('sk_live_LHNZk4cb75MT0mxUVKqcSUfO')
 var pg = require('pg');
 
 var app = express();
