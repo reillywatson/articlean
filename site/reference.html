@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Articlean - API Reference</title>
+<link href="css/saas-common.css" rel="stylesheet" type="text/css" media="all" />
+<link href="css/saas-default.css" rel="stylesheet" type="text/css" media="all" />
+<!--[if IE]>
+<script src="js/html5.js"></script>
+<![endif]-->
+<meta name='robots' content='noindex,nofollow' />
+
+<script type='text/javascript' src='js/jquery/jquery.js?ver=1.4.2'></script> 
+<script type='text/javascript' src='js/easySlider1.5.js?ver=3.0'></script>
+<script type='text/javascript' src='js/saas.js?ver=3.0'></script>
+<script type='text/javascript' src='js/jquery.cookie.min.js?ver=3.0'></script>
+<script type='text/javascript' src='js/saas.twitter.js?ver=3.0'></script>
+
+</head>
+<body>
+<div class="header">
+	<div>
+		<div class="center">
+			<div class="topLinks">
+				<div class="menu-top-links-container">
+				</div>
+			</div>
+			<h1 id="logo"><a href="/">Articlean - The Easy Reading API</a></h1>
+			<div class="nav">
+				<div class="menu-main-nav-container">
+					<ul id="menu-main-nav" class="menu">
+						<li class="menu-item"><a href="reference.html"><span>API Reference</span></a></li>
+						<li class="menu-item"><a href="plans-pricing.html"><span>Plans &#038; Pricing</span></a></li>
+						<li class="menu-item"><a href="sign-up.html"><span>Sign Up!</span></a></li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--div.header end -->
+
+<!--div.container start -->
+<div class="container">
+	<div class="center">
+		<div class="entry">
+			<h2>Using the API</h2>
+			<p>In order to use the API, you first need an <a href="sign-up.html">API key</a>.</p>
+			<p>Once you've obtained this, calling the API is very simple:</p>
+			<pre>curl http://www.articlean.net/article?apiKey=xxx&inlineImages=[true|false]&url=someUrl</pre>
+			<p/>
+			<p>The parameters are as follows:</p>
+			<ul>
+				<li><em>apiKey</em> (required) &mdash; your API key.</li>
+				<li><em>url</em> (required) &mdash; the URL of the article to fetch.</li>
+				<li><em>inlineImages</em> (not required, defaults to false) &mdash; if true, images will be returned embedded in the HTML as base64-encoded data. This can make it easier to store articles for offline reading. Note that this functionality is not available at all subscription levels.</li>
+			</ul>
+			<h2>Errors</h2>
+			<p>The Articlean API will return the following HTTP response codes on error:</p>
+			<ul>
+				<li><em>403</em> &mdash; invalid API key. Either <a href="sign-up.html">sign up</a> to request a key, or <a href="mailto:info@articlean.net">email us</a> if you've forgotten your existing one.</li>			
+				<li><em>408</em> &mdash; request timed out. This generally happens when the requested URL is unresponsive.</li>
+				<li><em>500</em> &mdash; unknown error. This likely means the server is down. Send us an email at <a href="mailto:info@articlean.net">info@articlean.net</a>.</li>
+			</ul>
+		</div>
+	</div>
+</div>
+<!--div.container end -->
+<!--div.footer start -->
+<div class="footer">
+	<div class="prom">
+		<div class="center">
+			<h2>
+				<strong>Start now! </strong>Try us out free for 30 days.			
+			</h2>
+			<div class="right"><a href="sign-up.html"><img src="images/btn-sign-up.png" alt="Sign Up!"></a></div>
+		</div>
+	</div>
+
+<!--div.footer end -->
+
+<script type='text/javascript' src='js/jquery/jquery.form.js?ver=2.02m'></script>
+</body>
+</html>

@@ -6,12 +6,80 @@ var phantom = require('phantom');
 var url = require('url');
 var zlib = require('zlib');
 var os = require('os');
+var stripe = require('stripe')('sk_test_eVW3CrjGJdsZHECe67dlpKnZ')
+var pg = require('pg');
 
 var app = express();
-app.use('/article', handler);
-app.use(express.static(__dirname + '/site'));
 var port = process.env.PORT || 5000;
+var dbConnectString = process.env.DATABASE_URL || 'postgres://admin:admin@localhost';
+
+
+app.configure(function() {
+	if (!process.env.DEMOMODE) {
+		app.use(express.static(__dirname + '/site'));
+	}
+	app.use(express.bodyParser());
+	app.use(app.router);
+});
 app.listen(port);
+
+app.get('/article', handler);
+
+var createUser = function(req, res, id) {
+	console.log('Success! Customer with Stripe ID ' + id + ' just signed up!');
+	pg.connect(dbConnectString, function(err, client, done) {
+		if (err) {
+			console.log("can't connect", err);
+		}
+		var apiKey = randomString(192);
+		client.query('INSERT INTO Users(CustomerId, EmailAddress, NumQueries, MaxQueries, BillingStart, ApiKey) VALUES($1,$2,$3,$4,$5,$6)', [id, req.body.email, 0, 100000, new Date(), apiKey], function(err, result) {
+			done && done(client);
+			if (err) {
+				console.log('err',err);
+				res.send("This email address is in use");
+			}
+			else {
+				res.send('ok ' + apiKey);
+			}
+		});
+	});
+};
+
+app.post("/plans/signup", function(req, res) {
+	console.log('body', req.body);
+	if (req.body.plan === 'Free') {
+		createUser(req, res, randomString(256));
+	}
+	else {
+		stripe.customers.create({
+			card : req.body.stripeToken,
+			email : req.body.email,
+			plan : req.body.plan+req.body.billingPeriod
+		}, function (err, customer) {
+			if (err) {
+				console.log('err',err);
+				console.log('customer',customer);
+				var msg = (customer && customer.error.message) || "unknown";
+				res.send("Error while processing your payment: " + msg);
+			}
+			else {
+				createUser(req, res, customer.id);
+			}
+		});
+	}
+});
+
+function randomString(bits){
+	var chars='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+	var ret='';
+	while(bits > 0) {
+		var rand=Math.floor(Math.random()*0x100000000)
+		for (var i=26; i>0 && bits>0; i-=6, bits-=6) {
+			ret+=chars[0x3F & rand >>> i];
+		}
+	}
+	return ret;
+}
 
 // this jazz really doesn't work for big images, because canvas.toDataURL() fails all over the place
 var inline_images = function(inline) {
@@ -161,10 +229,25 @@ function handler(req, res, next) {
 	if (!accept_encoding) {
 		accept_encoding = '';
 	}
-	if (api_key !== '1e203ad5a027436e9f72e1341cb801d9' && !process.env.DEMOMODE) {
-		res.writeHead('403');
-		res.end('Invalid API key!');
-		return;
-	}
-	get_clean_article(article_url, req, res, inline_images, accept_encoding);
+	pg.connect(dbConnectString, function(err, client, done) {
+		if (err) {
+			console.log("can't connect", err);
+			res.writeHead('500');
+			res.end('Unknown error');
+		}
+		var apiKey = randomString(192);
+		client.query('SELECT ApiKey FROM Users WHERE ApiKey=$1', [api_key], function(err, result) {
+			done && done(client);
+			if (err) {
+				console.log('err',err);
+			}
+			if (process.env.DEMOMODE || (result.rows && result.rows.length > 0)) {
+				get_clean_article(article_url, req, res, inline_images, accept_encoding);			
+			}
+			else {
+				res.writeHead('403');
+				res.end('Invalid API key!');
+			}
+		});
+	});
 };

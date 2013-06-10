@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title> SaaS WP Theme II</title>
+<link href="css/saas-common.css" rel="stylesheet" type="text/css" media="all" />
+<link href="css/saas-default.css" rel="stylesheet" type="text/css" media="all" />
+<!--[if IE]>
+<script src="js/html5.js"></script>
+<![endif]-->
+<meta name='robots' content='noindex,nofollow' />
+
+<script type='text/javascript' src='js/jquery/jquery.js?ver=1.4.2'></script> 
+<script type="text/javascript" src="https://js.stripe.com/v2/"></script>
+<script type='text/javascript' src='js/saas.js?ver=3.0'></script>
+<script type='text/javascript' src='js/jquery.cookie.min.js?ver=3.0'></script>
+<script type='text/javascript' src='js/jquery/purl.js?ver=2.3.1'></script>
+<script type='text/javascript' src='js/jquery/jquery.form.js?ver=2.02m'></script>
+<script type='text/javascript'>
+Stripe.setPublishableKey('pk_test_umbsQjTgsC3B6spK1zn1Y8W1');
+</script>
+</head>
+<body>
+	<div class="header">
+		<div>
+			<div class="center">
+				<div class="topLinks">
+					<div class="menu-top-links-container">
+					</div>
+				</div>
+				<h1 id="logo"><a href="/">Articlean - The Easy Reading API</a></h1>
+				<div class="nav">
+					<div class="menu-main-nav-container">
+						<ul id="menu-main-nav" class="menu">
+							<li class="menu-item"><a href="reference.html"><span>API Reference</span></a></li>
+							<li class="menu-item"><a href="plans-pricing.html"><span>Plans &#038; Pricing</span></a></li>
+							<li class="menu-item"><a href="sign-up.html"><span>Sign Up!</span></a></li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+<!--div.header end -->
+<!--div.container start -->
+<div class="container">
+	<div class="center" id="stripe-form">
+		<form class="signupform" method="post" action="/plans/signup" id="payment-form">
+		<h5>Choose A Plan</h5>
+		<ul>
+			<li>
+				<label class="plan" for="plan">Plan:</label>
+				<select	class="priceSelector plan" id="plan" name="plan">
+					<option value="Free">Free</option>
+					<option value="Basic">Basic</option>
+					<option value="Professional" selected="true">Professional</option>
+					<option value="Enterprise">Enterprise</option>
+				</select>
+				<label class="billingPeriod" for="billingPeriod">Billing Period:</label>
+				<select class="priceSelector billingPeriod" id="billingPeriod" name="billingPeriod">
+					<option value="Monthly">Monthly</option>
+					<option value="Yearly">Yearly (save 20%!)</option>
+				</select>
+				<li>
+					<div class="cost"><b>Price:</b> <span id="cost">$200/year</span></div>
+				</li>
+			</li>
+		</ul>
+		<h5>Enter Billing Info</h5>
+		<ul>
+			<li>
+				<label for="email">Email Address:</label>
+				<input class="email-address" id="email" name="email" type="text" />
+			</li>
+			<li id="ccNumRow">
+				<label id="lblCC" for="ccNumber">Credit Card Number:</label>
+				<input class="card-number" autocomplete="off" maxlength="16" id="ccNumber" type="text" />
+			</li>
+			<li id="ccExpRow">
+				<label id="lblExp" for="ccExpMonth">Expires:</label>
+				<input class="expires card-expiry-month" maxlength="2" id="ccExpMonth" type="text" placeholder="MM" />
+				<span>/</span>
+				<input class="expires card-expiry-year" maxlength="4" id="ccExpYear" type="text" placeholder="YYYY" />
+			</li>
+			<li id="ccCVVRow">
+				<label id="lblCvv" for="ccCvv">CVV:</label>
+				<input class="card-cvc cvv" autocomplete="off" maxlength="4" id="ccCvv" type="text" />
+				<img src="images/order-cvv.png" alt="CVV" />
+			</li>
+			<li class="a-center">
+				<button type="submit" class="submit-button"><span class="button"><span>Sign Up!</span></span></button>
+			</li>
+	</ul>
+		</form>
+		<div id="error"></div>
+		<div id="success">Thanks for signing up at Articlean!</div>
+	</div>
+</div>
+</body>
+</html>
