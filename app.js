@@ -137,7 +137,7 @@ var get_phantom_port = function() {
 };
 
 var totalMem = 512*1024*1024;//os.totalmem();
-// 3 phantoms per server, they use waaay too much memory :(
+// 5 phantoms per server, they use waaay too much memory :(
 // maybe we'll have to replace it with jsdom.
 var activePhantoms = 0;
 var maxActivePhantoms = Math.floor(totalMem / (100*1024*1024));
@@ -249,7 +249,7 @@ function handler(req, res, next) {
 			if (err) {
 				console.log('err',err);
 			}
-			if (result.rows && result.rows.length > 0) {
+			if (err || (result.rows && result.rows.length > 0)) {
 				get_clean_article(article_url, req, res, inline_images, accept_encoding);			
 			}
 			else {
