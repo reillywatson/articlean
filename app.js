@@ -8,6 +8,7 @@ var zlib = require('zlib');
 var os = require('os');
 var stripe = require('stripe')('sk_live_LHNZk4cb75MT0mxUVKqcSUfO')
 var pg = require('pg');
+var memjs = require('memjs').Client.create();
 
 var app = express();
 var port = process.env.PORT || 5000;
@@ -25,14 +26,16 @@ app.listen(port);
 
 app.get('/article', handler);
 
-var createUser = function(req, res, id) {
+var createUser = function(req, res, id, requestsPerMonth) {
 	console.log('Success! Customer with Stripe ID ' + id + ' just signed up!');
 	pg.connect(dbConnectString, function(err, client, done) {
 		if (err) {
 			console.log("can't connect", err);
 		}
 		var apiKey = randomString(192);
-		client.query('INSERT INTO Users(CustomerId, EmailAddress, NumQueries, MaxQueries, BillingStart, ApiKey) VALUES($1,$2,$3,$4,$5,$6)', [id, req.body.email, 0, 100000, new Date(), apiKey], function(err, result) {
+		var resetDate = new Date();
+		resetDate.setMonth(resetDate.getMonth() + 1);
+		client.query('INSERT INTO Users(CustomerId, EmailAddress, NumQueries, MaxQueries, BillingStart, ApiKey) VALUES($1,$2,$3,$4,$5,$6)', [id, req.body.email, 0, requestsPerMonth, resetDate, apiKey], function(err, result) {
 			done && done(client);
 			if (err) {
 				console.log('err',err);
@@ -50,9 +53,19 @@ app.post("/plans/signup", function(req, res) {
 		res.end('404');
 		return;
 	}
+	var requestsPerMonth = 200;
+	if (req.body.plan === 'Basic') {
+		requestsPerMonth = 5000;
+	}
+	else if (req.body.plan === 'Professional') {
+		requestsPerMonth = 50000;
+	}
+	else if (req.body.plan === 'Enterprise') {
+		requestsPerMonth = 500000;
+	}
 	console.log('body', req.body);
 	if (req.body.plan === 'Free') {
-		createUser(req, res, randomString(256));
+		createUser(req, res, randomString(256), requestsPerMonth);
 	}
 	else {
 		stripe.customers.create({
@@ -67,7 +80,7 @@ app.post("/plans/signup", function(req, res) {
 				res.send("Error while processing your payment: " + msg);
 			}
 			else {
-				createUser(req, res, customer.id);
+				createUser(req, res, customer.id, requestsPerMonth);
 			}
 		});
 	}
@@ -201,6 +214,7 @@ var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
 									console.log('finished:', fin);
 									page.evaluate(inline_images, function(html) {
 										console.log('inlined those suckers!');
+										//memjs.set(url+inlineImages, html);
 										compress(html, res, acceptEncoding);
 										killPhantom(ph, page);
 									}, inlineImages);
@@ -216,6 +230,18 @@ var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
 		res.writeHead(408);
 		res.end('Timeout');
 	}, 250, 20000);
+};
+
+var getArticle = function(article_url, req, res, inline_images, accept_encoding) {
+/*	memjs.get(article_url + inline_images, function(err, value) {
+		console.log("got it");
+		if (value) {
+			compress(value, res, accept_encoding);
+		}
+		else {*/
+			get_clean_article(article_url, req, res, inline_images, accept_encoding);
+//		}
+//	});
 };
 
 function handler(req, res, next) {
@@ -239,18 +265,39 @@ function handler(req, res, next) {
 	}
 	pg.connect(dbConnectString, function(err, client, done) {
 		if (err) {
-			console.log("can't connect", err);
-			res.writeHead('500');
-			res.end('Unknown error');
+			getArticle(article_url, req, res, inline_images, accept_encoding);
+			return;
 		}
 		var apiKey = randomString(192);
-		client.query('SELECT ApiKey FROM Users WHERE ApiKey=$1', [api_key], function(err, result) {
+		client.query('SELECT * FROM Users WHERE ApiKey=$1', [api_key], function(err, result) {
 			done && done(client);
 			if (err) {
 				console.log('err',err);
 			}
 			if (err || (result.rows && result.rows.length > 0)) {
-				get_clean_article(article_url, req, res, inline_images, accept_encoding);			
+				var customerId = result.rows[0].customerid;
+				var maxQueries = result.rows[0].maxqueries;
+				var numQueries = result.rows[0].numqueries;
+				var billingStart = result.rows[0].billingstart;
+				var currentDate = new Date();
+				console.log('billing start', billingStart);
+				console.log('current', currentDate.toISOString());
+				if (currentDate.toISOString() > billingStart) {
+					console.log('resetting!!!!');
+					billingStart = currentDate;
+					billingStart.setMonth(billingStart.getMonth() + 1);
+					console.log("needs reset!");
+					client.query('UPDATE USERS SET NumQueries = 0, BillingStart=$1 WHERE CustomerId=$2', [billingStart, customerId], function(err, result){});
+				}
+				else {
+					if (numQueries > maxQueries) {
+						res.writeHead('403');
+						res.end('Too many requests!');
+						return;
+					}
+					client.query('UPDATE Users SET NumQueries = NumQueries + 1 WHERE CustomerId=$1', [customerId], function(err, result){});
+				}
+				getArticle(article_url, req, res, inline_images, accept_encoding);
 			}
 			else {
 				res.writeHead('403');

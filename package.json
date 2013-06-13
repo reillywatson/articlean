@@ -3,6 +3,7 @@
 	"version" : "0.0.1",
 	"dependencies" : {
 		"express" : "3.2.6",
+		"memjs" : "0.6.0",
 		"nodetime" : "0.8.12",
 		"pg" : "0.6.15",
 		"phantom" : "0.5.1",
