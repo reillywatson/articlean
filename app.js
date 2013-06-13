@@ -260,7 +260,7 @@ function handler(req, res, next) {
 		accept_encoding = '';
 	}
 	if (process.env.DEMOMODE) {
-		get_clean_article(article_url, req, res, inline_images, accept_encoding);
+		getArticle(article_url, req, res, inline_images, accept_encoding);
 		return;
 	}
 	pg.connect(dbConnectString, function(err, client, done) {
