@@ -292,7 +292,7 @@ function handler(req, res, next) {
 				else {
 					if (numQueries > maxQueries) {
 						res.writeHead('403');
-						res.end('Too many requests!');
+						res.end('Too many requests! Email info@articlean.net to upgrade your plan.');
 						return;
 					}
 					client.query('UPDATE Users SET NumQueries = NumQueries + 1 WHERE CustomerId=$1', [customerId], function(err, result){});
