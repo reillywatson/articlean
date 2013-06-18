@@ -282,13 +282,10 @@ function handler(req, res, next) {
 				var numQueries = result.rows[0].numqueries;
 				var billingStart = result.rows[0].billingstart;
 				var currentDate = new Date();
-				console.log('billing start', billingStart);
-				console.log('current', currentDate.toISOString());
 				if (currentDate.toISOString() > billingStart) {
 					console.log('resetting!!!!');
 					billingStart = currentDate;
 					billingStart.setMonth(billingStart.getMonth() + 1);
-					console.log("needs reset!");
 					client.query('UPDATE USERS SET NumQueries = 0, BillingStart=$1 WHERE CustomerId=$2', [billingStart, customerId], function(err, result){});
 				}
 				else {
