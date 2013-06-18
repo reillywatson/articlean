@@ -223,7 +223,7 @@ var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
 										tidy(html, function(err, html) {
 											//memjs.set(url+inlineImages, html);
 											compress(html, res, acceptEncoding);
-										};
+										});
 									}, inlineImages);
 								}
 							};
