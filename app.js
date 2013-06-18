@@ -239,15 +239,15 @@ var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
 };
 
 var getArticle = function(article_url, req, res, inline_images, accept_encoding) {
-/*	memjs.get(article_url + inline_images, function(err, value) {
+	memjs.get(article_url + inline_images, function(err, value) {
 		console.log("got it");
 		if (value) {
 			compress(value, res, accept_encoding);
 		}
-		else {*/
+		else {
 			get_clean_article(article_url, req, res, inline_images, accept_encoding);
-//		}
-//	});
+		}
+	});
 };
 
 function handler(req, res, next) {
