@@ -17,7 +17,7 @@ var totalMem = 512*1024*1024;//os.totalmem();
 // maybe we'll have to replace it with jsdom.
 var activePhantoms = 0;
 var maxActivePhantoms = Math.floor(totalMem / (100*1024*1024));
-http.globalAgent.maxSockets = maxActivePhantoms;
+http.globalAgent.maxSockets = 3;
 
 var app = express();
 var port = process.env.PORT || 5000;
