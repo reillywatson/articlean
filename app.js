@@ -117,7 +117,8 @@ var inline_images = function(inline) {
 	}
 	var meta=document.createElement('meta');
 	meta.setAttribute('charset','utf-8');
-	document.getElementsByTagName('head')[0].appendChild(meta);
+	var head = document.getElementsByTagName('head')[0];
+	head.insertBefore(meta, head.firstChild);
 	if (inline) {
 		var canvas = document.createElement('canvas');
 		var ctx = canvas.getContext('2d');
