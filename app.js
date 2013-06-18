@@ -2,6 +2,7 @@ require('nodetime').profile({
 	accountKey: '24e45f192591e4c06a15942d87750984ee0aa308'
 });
 var express = require('express');
+var http = require('http');
 var phantom = require('phantom');
 var url = require('url');
 var zlib = require('zlib');
@@ -9,6 +10,14 @@ var os = require('os');
 var stripe = require('stripe')('sk_live_LHNZk4cb75MT0mxUVKqcSUfO')
 var pg = require('pg');
 var memjs = require('memjs').Client.create();
+
+
+var totalMem = 512*1024*1024;//os.totalmem();
+// 5 phantoms per server, they use waaay too much memory :(
+// maybe we'll have to replace it with jsdom.
+var activePhantoms = 0;
+var maxActivePhantoms = Math.floor(totalMem / (100*1024*1024));
+http.globalAgent.maxSockets = maxActivePhantoms;
 
 var app = express();
 var port = process.env.PORT || 5000;
@@ -149,12 +158,6 @@ var get_phantom_port = function() {
 	return phantomPort;
 };
 
-var totalMem = 512*1024*1024;//os.totalmem();
-// 5 phantoms per server, they use waaay too much memory :(
-// maybe we'll have to replace it with jsdom.
-var activePhantoms = 0;
-var maxActivePhantoms = Math.floor(totalMem / (100*1024*1024));
-
 var waitFor = function(fn, callback, timeoutCallback, timeout, maxTimeout) {
 	var waitForRec = function(timeSoFar) {
 		if (timeSoFar > maxTimeout) {
@@ -268,7 +271,6 @@ function handler(req, res, next) {
 			getArticle(article_url, req, res, inline_images, accept_encoding);
 			return;
 		}
-		var apiKey = randomString(192);
 		client.query('SELECT * FROM Users WHERE ApiKey=$1', [api_key], function(err, result) {
 			done && done(client);
 			if (err) {
