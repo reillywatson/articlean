@@ -10,7 +10,6 @@ var os = require('os');
 var stripe = require('stripe')('sk_live_LHNZk4cb75MT0mxUVKqcSUfO')
 var pg = require('pg');
 var memjs = require('memjs').Client.create();
-var tidy = require('htmltidy').tidy;
 
 
 var totalMem = 512*1024*1024;//os.totalmem();
@@ -218,12 +217,11 @@ var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
 								else {
 									console.log('finished:', fin);
 									page.evaluate(inline_images, function(html) {
-										killPhantom(ph, page);
 										console.log('inlined those suckers!');
-										tidy(html, function(err, html) {
-											//memjs.set(url+inlineImages, html);
-											compress(html, res, acceptEncoding);
-										});
+										html = html.replace(/\s+/g, " ");
+										//memjs.set(url+inlineImages, html);
+										compress(html, res, acceptEncoding);
+										killPhantom(ph, page);
 									}, inlineImages);
 								}
 							};
