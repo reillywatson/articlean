@@ -195,6 +195,7 @@ var get_clean_article = function(url, req, res, inlineImages, acceptEncoding) {
 			ph.running = true;
 			setTimeout(function() { killPhantom(ph, null); }, 35000);
 			console.log('active phantoms: ', activePhantoms);
+			console.log('active sockets: ', http.globalAgent.requests.length);
 			return ph.createPage(function(page) {
 				req.on('close', function() {
 					killPhantom(ph, page);
